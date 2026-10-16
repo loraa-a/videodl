@@ -1,3 +1,5 @@
+> **新片场简化下载（本 fork 新增）**：Windows 双击 **下载新片场.cmd**，粘贴作品链接即可。只需 Python，无需安装依赖或激活虚拟环境，普通 MP4 无需 FFmpeg。详见 [新片场快速使用](docs/新片场快速使用.md)。
+
 <div align="center">
   <img src="https://raw.githubusercontent.com/CharlesPikachu/videodl/master/docs/logo.png" width="600"/>
 </div>

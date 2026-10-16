@@ -85,7 +85,7 @@ class VideoClient():
     def parsefromurl(self, url: str) -> list[VideoInfo]:
         video_infos: list[VideoInfo] = []
         # direct media link
-        if self.web_media_grabber.isprobablydirectmedia(url, self.requests_overrides.get(self.web_media_grabber.source, {}))[0]: return self.web_media_grabber.parsefromurl(url, self.requests_overrides.get(self.web_media_grabber.source, {}))
+        if self.web_media_grabber.lookslikemediaurl(url) and self.web_media_grabber.isprobablydirectmedia(url, self.requests_overrides.get(self.web_media_grabber.source, {}))[0]: return self.web_media_grabber.parsefromurl(url, self.requests_overrides.get(self.web_media_grabber.source, {}))
         # platform-specific clients
         if not self.apply_common_video_clients_only:
             for vc_name in list(self.video_clients.keys()):

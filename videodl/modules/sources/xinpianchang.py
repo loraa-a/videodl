@@ -25,6 +25,28 @@ class XinpianchangVideoClient(BaseVideoClient):
         self.default_download_headers = {"accept-encoding": "identity;q=1, *;q=0", "referer": "https://www.xinpianchang.com/", "sec-ch-ua": "\"Google Chrome\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"", "sec-ch-ua-mobile": "?0", "sec-ch-ua-platform": "\"Windows\"", "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"}
         self.default_headers = self.default_parse_headers
         self._initsession()
+    '''_getvideometadata'''
+    def _getvideometadata(self, url: str, request_overrides: dict):
+        article_match = re.fullmatch(r'/a(\d+)/?', urlparse(url).path)
+        if article_match:
+            try:
+                article_url = f'https://app.xinpianchang.com/article/{article_match.group(1)}'
+                (resp := self.get(article_url, **request_overrides)).raise_for_status()
+                article_data = resp2json(resp=resp)
+                video = article_data['data']['video']
+                if not video.get('appKey') or not video.get('vid'):
+                    raise ValueError('The article response contains no playable video metadata')
+                return {'article': article_data}, video
+            except Exception as err:
+                self.logger_handle.warning(f'{self.source}: article API unavailable, trying the web page (Error: {err})', disable_print=self.disable_print)
+        page_overrides = dict(request_overrides)
+        page_overrides['headers'] = {'Referer': url, **(page_overrides.get('headers') or {})}
+        (resp := self.get(url, **page_overrides)).raise_for_status()
+        tag = BeautifulSoup(resp.text, 'html.parser').find('script', id='__NEXT_DATA__')
+        if tag is None:
+            raise ValueError('The page contains no video metadata')
+        raw_data = json_repair.loads((tag.string if tag.string is not None else tag.get_text()).strip())
+        return raw_data, raw_data['props']['pageProps']['detail']['video']
     '''_parsefromurlwithwww'''
     @useparseheaderscookies
     def _parsefromurlwithwww(self, url: str, request_overrides: dict = None):
@@ -33,10 +55,8 @@ class XinpianchangVideoClient(BaseVideoClient):
         request_overrides, video_info, null_backup_title = request_overrides or {}, VideoInfo(source=self.source, download_with_ffmpeg=True), yieldtimerelatedtitle(self.source)
         # try parse
         try:
-            (resp := self.get(url, headers={'Referer': url}, **request_overrides)).raise_for_status()
-            tag = BeautifulSoup(resp.text, "html.parser").find("script", id="__NEXT_DATA__")
-            raw_data = json_repair.loads((tag.string if tag.string is not None else tag.get_text()).strip())
-            app_key, vid = raw_data['props']['pageProps']['detail']['video']['appKey'], raw_data['props']['pageProps']['detail']['video']["vid"]
+            raw_data, video_metadata = self._getvideometadata(url, request_overrides)
+            app_key, vid = video_metadata['appKey'], video_metadata['vid']
             (resp := self.get(f"https://mod-api.xinpianchang.com/mod/api/v2/media/{vid}?appKey={app_key}&extend=userInfo%2CuserStatus", **request_overrides)).raise_for_status()
             raw_data[f'media/{vid}'] = resp2json(resp=resp); resource: dict = raw_data[f'media/{vid}']['data']['resource']; video_info.update(dict(raw_data=raw_data))
             video_info.update(dict(download_url=next((v.get('url') if k in ('dash', 'hls') and isinstance(v, dict) else next((item.get('url') or item.get('backupUrl') for item in sorted(v, key=lambda x: (x.get('height', 0) * x.get('width', 0), x.get('filesize', 0)), reverse=True) if item.get('url') or item.get('backupUrl')), None) for k, v in resource.items() if (k in ('dash', 'hls') and isinstance(v, dict)) or (k == 'progressive' and isinstance(v, list))), None)))
