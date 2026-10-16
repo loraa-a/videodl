@@ -1,4 +1,77 @@
-> **新片场简化下载（本 fork 新增）**：Windows 双击 **下载新片场.cmd**，粘贴作品链接即可。只需 Python，无需安装依赖或激活虚拟环境，普通 MP4 无需 FFmpeg。详见 [新片场快速使用](docs/新片场快速使用.md)。
+> **本地网页下载（本 fork 新增）**：手动启动 Python 服务，在浏览器粘贴链接下载视频。当前网页只支持新片场，原项目其他平台客户端保留。
+
+## 本地网页下载：从启动到关闭
+
+### 1. 检查 Python
+
+打开 PowerShell，运行：
+
+```powershell
+python --version
+```
+
+需要 Python 3.10 或更高版本。已经安装则无需重复安装；未安装时，从 <https://www.python.org/downloads/> 下载安装，勾选 **Add python.exe to PATH**，安装后重新打开 PowerShell。
+
+此网页服务使用 Python 标准库，**不需要安装 requirements.txt 中的依赖，不需要激活虚拟环境，也不需要安装 Node.js 或单独构建前端**。
+
+### 2. 手动启动后端服务
+
+在 PowerShell 中依次运行：
+
+```powershell
+cd D:\qmake\videodl\videodl
+python web_server.py --no-browser
+```
+
+如果项目放在其他位置，将第一行改成实际的项目目录。看到“视频下载服务已启动”后，保持该窗口打开。`--no-browser` 表示只启动服务，由你自行打开网页。
+
+### 3. 打开前端网页
+
+在浏览器地址栏输入：
+
+```text
+http://127.0.0.1:8765/
+```
+
+前端页面由同一个 Python 服务提供，不需要另外启动前端。
+
+### 4. 粘贴链接并下载
+
+1. 将新片场作品链接粘贴到网页输入框，例如 `https://www.xinpianchang.com/a13019115`，也支持包含链接的分享文字。
+2. 点击 **开始下载**，在任务列表查看下载进度和结果。
+3. 等待任务显示 **已完成**，视频已经保存到本地目录。
+
+默认保存目录为项目下的 `videodl_outputs/XinpianchangVideoClient/`。按上述项目位置启动时，完整路径是：
+
+```text
+D:\qmake\videodl\videodl\videodl_outputs\XinpianchangVideoClient
+```
+
+网页里的 **另存视频** 可以通过浏览器再保存一份到其他位置。可连续添加作品，任务按顺序下载；重名文件会自动加序号，不会覆盖已有视频。刷新网页可继续查看任务，重启服务后任务记录清空，已下载文件保留。
+
+### 5. 关闭服务
+
+回到启动服务的 PowerShell 窗口，按 **Ctrl+C**。服务停止接收任务，已开始的下载完成后退出，排队中的任务取消。
+
+以后使用，只需重复第 **2～5** 步。
+
+### 可选启动方式与设置
+
+自定义端口和视频保存目录：
+
+```powershell
+python web_server.py --no-browser --port 8766 -o "D:\视频"
+```
+
+此时浏览器访问 <http://127.0.0.1:8766/>。如果默认端口被占用，可以用 `--port` 更换端口。服务仅监听本机。
+
+如果希望启动时自动打开浏览器，可运行 `python web_server.py`，或双击项目目录中的 **下载新片场.cmd**。
+
+自动选择网站提供的最高可用 MP4 画质，普通 MP4 下载无需 FFmpeg。仅提供 HLS/DASH 流的作品需要 FFmpeg，可将 `ffmpeg.exe` 放在项目根目录，或将其 `bin` 目录加入 PATH。网页当前支持 `www.xinpianchang.com/a数字` 形式的作品链接，不支持素材库链接或登录；需要登录才能播放的作品可能无法下载。
+
+更多说明和直接使用命令行下载的方法，见 [新片场快速使用](docs/新片场快速使用.md)。
+
+---
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/CharlesPikachu/videodl/master/docs/logo.png" width="600"/>

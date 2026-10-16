@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>片刻收藏 · 新片场视频下载</title>
+  <style>
+    :root { color-scheme: light; --ink: #202924; --muted: #727b74; --line: #e4e8e1; --green: #c4ef88; --deep: #243c30; font-family: "Segoe UI", "Microsoft YaHei", sans-serif; color: var(--ink); background: #f5f6f2; }
+    * { box-sizing: border-box; }
+    body { margin: 0; -webkit-font-smoothing: antialiased; }
+    button, textarea { font: inherit; }
+    button, a, textarea { -webkit-tap-highlight-color: transparent; }
+    button, a { touch-action: manipulation; }
+    button:focus-visible, a:focus-visible { outline: 3px solid #578544; outline-offset: 4px; }
+    [hidden] { display: none !important; }
+    .icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+    .sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+    .shell { max-width: 1240px; margin: auto; padding: 0 38px; }
+    .topbar { border-bottom: 1px solid var(--line); background: #fafbf8; }
+    .topbar-inner { height: 86px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark { display: grid; place-items: center; width: 39px; height: 39px; background: var(--deep); color: var(--green); border-radius: 12px; }
+    .brand-name { font-size: 18px; font-weight: 700; letter-spacing: -.5px; }
+    .brand-caption { margin-top: 2px; font-size: 9px; letter-spacing: 2.2px; color: var(--muted); }
+    .top-note { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 9px; }
+    .top-note::before { content: ''; width: 6px; height: 6px; background: #6b9850; border-radius: 50%; }
+    main { padding-top: 32px !important; padding-bottom: 28px !important; }
+    .hero { position: relative; display: flex; align-items: center; justify-content: space-between; overflow: hidden; min-height: 298px; padding: 40px 46px; border-radius: 22px; background: #202e27; color: #fff; }
+    .hero::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .15; background-image: radial-gradient(#c5d9bc 0.5px, transparent 0.5px); background-size: 6px 6px; mask-image: linear-gradient(90deg, transparent, black); }
+    .hero-copy { position: relative; z-index: 1; }
+    .eyebrow { display: flex; align-items: center; gap: 10px; font-size: 10px; font-weight: 600; letter-spacing: 2.8px; color: #c3d5c4; }
+    .eyebrow::before { content: ''; height: 1px; width: 26px; background: var(--green); }
+    h1 { font-size: clamp(32px, 4.3vw, 52px); font-weight: 600; line-height: 1.35; letter-spacing: -1.8px; margin: 22px 0 15px; }
+    h1 span { color: var(--green); }
+    .intro { font-size: 13px; color: #b2c0b6; line-height: 1.9; margin: 0; }
+    .hero-art { position: relative; z-index: 1; flex: 0 0 280px; height: 220px; margin: 0 4px 0 28px; }
+    .orbit { position: absolute; border: 1px solid #9abe8530; border-radius: 50%; width: 268px; height: 268px; left: 5px; top: -24px; }
+    .orbit::after { content: ''; position: absolute; width: 196px; height: 196px; border: 1px solid #9abe8520; border-radius: 50%; top: 35px; left: 35px; }
+    .film-back { position: absolute; width: 210px; height: 145px; top: 28px; left: 35px; border: 1px solid #64856d; border-radius: 12px; transform: rotate(12deg); background: #34483a; }
+    .film { position: absolute; width: 220px; height: 150px; top: 39px; left: 20px; border: 1px solid #6d8c6b; border-radius: 12px; transform: rotate(-8deg); background: linear-gradient(140deg, #52684a, #283b2f); box-shadow: 0 20px 35px #101b2580; padding: 14px; }
+    .film-head { display: flex; justify-content: space-between; font-size: 8px; letter-spacing: 2px; color: #d4e4c4; }
+    .film-head span:last-child { color: var(--green); }
+    .play { position: absolute; top: 48px; left: 84px; width: 48px; height: 48px; border: 1px solid #d6e8bb70; background: #c4ef8818; border-radius: 50%; display: grid; place-items: center; color: #e2f4ce; }
+    .play .icon { width: 21px; height: 21px; margin-left: 3px; }
+    .film-timeline { position: absolute; left: 14px; right: 14px; bottom: 17px; height: 2px; background: #a0b89540; }
+    .film-timeline::before { content: ''; display: block; width: 68%; height: 2px; background: var(--green); }
+    .art-badge { position: absolute; bottom: 4px; right: 1px; display: flex; align-items: center; gap: 9px; padding: 12px 16px; border: 1px solid #c4ef8830; border-radius: 10px; background: #334736; color: #def2cd; font-size: 11px; box-shadow: 0 8px 20px #14251940; }
+    .art-badge .icon { width: 16px; height: 16px; }
+    .workspace { display: grid; grid-template-columns: minmax(0, 1fr) 290px; align-items: start; gap: 22px; margin-top: 24px; }
+    .main-column { min-width: 0; }
+    .panel { background: #fff; border: 1px solid var(--line); border-radius: 17px; padding: 27px; }
+    .panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 23px; }
+    .heading-label { display: flex; align-items: center; gap: 10px; }
+    .heading-label > .icon { color: #688363; }
+    h2 { font-size: 16px; font-weight: 650; margin: 0; letter-spacing: -.3px; }
+    .platform { display: flex; align-items: center; gap: 7px; padding: 5px 9px; color: #586951; font-size: 10px; background: #f2f6ec; border: 1px solid #e3ebd9; border-radius: 6px; white-space: nowrap; }
+    .platform::before { content: ''; height: 5px; width: 5px; border-radius: 50%; background: #7b9b61; }
+    label { display: block; margin-bottom: 11px; font-size: 12px; font-weight: 500; color: #626d64; }
+    textarea { display: block; width: 100%; min-height: 125px; padding: 16px 18px; border: 1px solid #e1e6dd; border-radius: 10px; background: #fafbf8; resize: vertical; color: var(--ink); font-size: 13px; line-height: 1.9; transition: border-color .2s, box-shadow .2s; }
+    textarea::placeholder { color: #939c90; }
+    textarea:focus { outline: none; border-color: #8cac70; box-shadow: 0 0 0 3px #b3d88b25; }
+    .actions { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-top: 18px; }
+    .hint { color: var(--muted); font-size: 11px; line-height: 1.8; }
+    button, .file { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 44px; padding: 0 19px; border: 1px solid #b4df7c; border-radius: 9px; background: var(--green); color: #263b20; font-size: 12px; font-weight: 650; text-decoration: none; cursor: pointer; transition: background .2s, transform .2s; white-space: nowrap; }
+    button:hover, .file:hover { background: #b5e477; transform: translateY(-1px); }
+    button:disabled { opacity: .6; cursor: wait; transform: none; }
+    button .icon { width: 16px; height: 16px; }
+    #error { margin: 16px 0 0; font-size: 12px; line-height: 1.8; color: #a43c32; padding: 10px 13px; border-radius: 8px; background: #fff5f1; }
+    #error:empty { display: none; }
+    .task-panel { margin-top: 22px; }
+    .task-panel .panel-heading { margin-bottom: 5px; }
+    #count { margin-left: 3px; color: #7d8a77; font-size: 12px; font-weight: 400; }
+    #connection { display: inline-flex; align-items: center; gap: 6px; color: #6c7a64; font-size: 10px; text-align: right; line-height: 1.6; }
+    #connection::before { content: ''; width: 5px; height: 5px; flex-shrink: 0; border-radius: 50%; background: #80a763; }
+    #connection.offline { color: #a43c32; }
+    #connection.offline::before { background: #c56b61; }
+    #empty { text-align: center; padding: 33px 0 22px; }
+    .empty-icon { display: grid; place-items: center; width: 58px; height: 58px; margin: 0 auto 15px; border: 1px solid #e6ecde; border-radius: 18px; color: #95ab82; background: #f6f8f2; transform: rotate(-5deg); }
+    .empty-icon .icon { width: 26px; height: 26px; }
+    #empty strong { display: block; font-size: 13px; font-weight: 500; margin-bottom: 8px; }
+    #empty p { margin: 0; color: #8d9689; font-size: 11px; line-height: 1.8; }
+    .task { padding: 22px 0; border-bottom: 1px solid #edf0e9; }
+    .task:last-child { padding-bottom: 0; border-bottom: 0; }
+    .task-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 15px; }
+    .title { font-size: 13px; font-weight: 600; line-height: 1.8; overflow-wrap: anywhere; }
+    .status { flex-shrink: 0; padding: 3px 8px; border-radius: 5px; background: #f0f5e9; color: #637c45; font-size: 10px; line-height: 1.8; }
+    .completed .status { color: #32715a; background: #edf6ee; }
+    .failed .status { color: #a43c32; background: #fff0ec; }
+    .queued .status { color: #7d8175; background: #f3f4ef; }
+    .source { display: block; margin: 6px 0 10px; font-size: 10px; line-height: 1.8; color: #939b8e; overflow-wrap: anywhere; }
+    progress { width: 100%; height: 6px; display: block; margin: 14px 0 10px; border: 0; border-radius: 9px; overflow: hidden; accent-color: #89b65e; background: #eef2e8; }
+    progress::-webkit-progress-bar { background: #eef2e8; border-radius: 9px; }
+    progress::-webkit-progress-value { background: #97c46d; border-radius: 9px; }
+    progress::-moz-progress-bar { background: #97c46d; border-radius: 9px; }
+    progress:indeterminate { background: linear-gradient(90deg, #eef2e8, #b0cd91, #eef2e8); background-size: 200% 100%; animation: loading 2s ease infinite; }
+    .meta { color: var(--muted); font-size: 11px; line-height: 1.9; overflow-wrap: anywhere; }
+    .failure { margin-top: 8px; font-size: 12px; line-height: 1.8; color: #a43c32; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .file { min-height: 34px; padding: 0 12px; margin-top: 12px; font-size: 11px; background: #f0f6e9; border-color: #dfe9d5; }
+    .sidebar { display: grid; gap: 20px; }
+    .summary { background: #eef2e7; border-color: #e0e6d6; }
+    .side-label { margin: 0 0 18px; font-size: 10px; letter-spacing: 1.5px; color: #748165; }
+    .summary-total { display: flex; align-items: baseline; gap: 8px; }
+    #total-count { font-size: 46px; font-weight: 500; letter-spacing: -2px; line-height: 1.2; font-variant-numeric: tabular-nums; }
+    .summary-total span:last-child { color: #748165; font-size: 11px; }
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px; padding-top: 18px; border-top: 1px solid #dbe2d1; }
+    .summary-grid strong { display: block; font-size: 22px; font-weight: 500; margin-bottom: 5px; font-variant-numeric: tabular-nums; }
+    .summary-grid span { font-size: 10px; color: #7a866d; }
+    .storage-head { display: flex; align-items: center; gap: 8px; margin-bottom: 15px; font-size: 13px; font-weight: 600; }
+    .storage-head .icon { width: 17px; height: 17px; color: #778d64; }
+    #output { display: block; background: #f7f8f4; border: 1px solid #ecede6; border-radius: 8px; padding: 12px; font: 10px/1.9 Consolas, "Microsoft YaHei", monospace; color: #68745f; overflow-wrap: anywhere; user-select: all; }
+    .storage-note { margin: 12px 0 0; font-size: 10px; color: #89917f; line-height: 1.9; }
+    .guide { padding: 3px 9px; }
+    .guide h2 { font-size: 12px; margin-bottom: 18px; }
+    .guide ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 18px; counter-reset: step; }
+    .guide li { display: flex; align-items: flex-start; gap: 11px; counter-increment: step; }
+    .guide li::before { content: '0' counter(step); flex-shrink: 0; color: #94a088; font: 11px/1.9 Consolas, monospace; }
+    .guide strong { display: block; font-size: 11px; font-weight: 500; margin-bottom: 5px; }
+    .guide p { margin: 0; font-size: 10px; color: #89917f; line-height: 1.8; }
+    footer { display: flex; justify-content: space-between; gap: 20px; margin-top: 28px; padding-top: 18px; border-top: 1px solid var(--line); color: #8c9585; font-size: 10px; line-height: 1.9; }
+    .footer-brand { letter-spacing: 1.5px; }
+    @keyframes loading { to { background-position: -200% 0; } }
+    @media (min-width: 1500px) { main { padding-top: 44px !important; } .hero { min-height: 330px; } }
+    @media (max-width: 960px) { .shell { padding-left: 26px; padding-right: 26px; } .hero { padding: 36px; } .hero-art { transform: scale(.85); transform-origin: right center; margin-left: 0; flex-basis: 245px; } .workspace { grid-template-columns: minmax(0, 1fr) 245px; gap: 18px; } .panel { padding: 22px; } }
+    @media (max-width: 740px) { .topbar-inner { height: 74px; } .hero { min-height: 270px; padding: 30px; } .hero-art { flex-basis: 190px; transform: scale(.7); margin-left: -24px; margin-right: -14px; } .workspace { grid-template-columns: 1fr; } .sidebar { grid-template-columns: 1fr 1fr; } .guide { grid-column: 1 / -1; padding: 10px 3px 0; } .guide ol { grid-template-columns: repeat(3, 1fr); gap: 16px; } .summary-grid { margin-top: 16px; } .summary-total { margin-top: 4px; } }
+    @media (max-width: 520px) { .shell { padding-left: 18px; padding-right: 18px; } main { padding-top: 20px !important; } .top-note { font-size: 10px; } .brand-name { font-size: 16px; } .brand-mark { width: 35px; height: 35px; } .brand-caption { font-size: 8px; } .hero { padding: 30px 25px; border-radius: 17px; min-height: 245px; } h1 { font-size: 34px; letter-spacing: -1.2px; } .hero-art { display: none; } .intro { font-size: 11px; } .eyebrow { font-size: 8px; letter-spacing: 2.5px; } .workspace { margin-top: 18px; } .panel { padding: 21px; border-radius: 14px; } .panel-heading { margin-bottom: 20px; } h2 { font-size: 14px; } .actions { flex-direction: column-reverse; align-items: stretch; gap: 12px; } .actions button { width: 100%; min-height: 46px; } .actions .hint { text-align: center; font-size: 10px; } textarea { font-size: 12px; min-height: 130px; padding: 13px; } .sidebar { gap: 14px; } .summary, .storage { padding: 17px; } .side-label { font-size: 9px; letter-spacing: .8px; } .summary-grid { gap: 8px; } .summary-grid strong { font-size: 19px; } #total-count { font-size: 36px; } .storage-head { font-size: 12px; } #output { padding: 9px; font-size: 9px; } .task-head { flex-direction: column; align-items: flex-start; gap: 6px; } #connection { max-width: 150px; font-size: 9px; } footer { flex-direction: column; gap: 4px; font-size: 9px; } .guide ol { grid-template-columns: 1fr; gap: 15px; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+<svg class="sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 15v5h16v-5"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 5 11 7-11 7Z"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="m10 13 4-4m-6 7-1 1a4.2 4.2 0 0 1-6-6l5-5a4.2 4.2 0 0 1 6 0m0 12a4.2 4.2 0 0 0 6 0l5-5a4.2 4.2 0 0 0-6-6l-1 1" transform="translate(1 1) scale(.9)"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 8V5h7l2 3h9v12H3V8Z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+</svg>
+<header class="topbar">
+  <div class="shell topbar-inner">
+    <div class="brand"><span class="brand-mark"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg></span><div><div class="brand-name">片刻收藏</div><div class="brand-caption">VIDEO COLLECTION</div></div></div>
+    <span class="top-note">你的本地影像收藏夹</span>
+  </div>
+</header>
+<main class="shell">
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <div class="eyebrow">SAVE THE INSPIRATION</div>
+      <h1 id="hero-title">让灵感停留，<br><span>让好作品被收藏。</span></h1>
+      <p class="intro">从一条链接开始，将喜欢的影像留在身边。<br>粘贴新片场作品链接，下载最高可用画质。</p>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <div class="orbit"></div><div class="film-back"></div>
+      <div class="film"><div class="film-head"><span>THE COLLECTION</span><span>REC ●</span></div><div class="play"><svg class="icon"><use href="#i-play"/></svg></div><div class="film-timeline"></div></div>
+      <div class="art-badge"><svg class="icon"><use href="#i-check"/></svg>留住每一帧灵感</div>
+    </div>
+  </section>
+  <div class="workspace">
+    <div class="main-column">
+      <form id="form" class="panel">
+        <div class="panel-heading"><div class="heading-label"><svg class="icon" aria-hidden="true"><use href="#i-link"/></svg><h2>添加一部作品</h2></div><span class="platform">新片场</span></div>
+        <label for="url">粘贴作品链接或分享文字</label>
+        <textarea id="url" aria-describedby="url-hint" placeholder="https://www.xinpianchang.com/a13019115&#10;把喜欢的作品，收藏在这里…" required maxlength="6000" spellcheck="false"></textarea>
+        <div class="actions"><span id="url-hint" class="hint">每次添加一条链接，多部作品将按顺序下载。</span><button id="submit" type="submit"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg><span id="submit-label">开始下载</span></button></div>
+        <p id="error" role="alert"></p>
+      </form>
+      <section class="panel task-panel" aria-labelledby="task-title">
+        <div class="panel-heading"><div class="heading-label"><svg class="icon" aria-hidden="true"><use href="#i-list"/></svg><h2 id="task-title">下载任务 <span id="count"></span></h2></div><span id="connection" role="status">连接中…</span></div>
+        <div id="empty"><div class="empty-icon"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg></div><strong>下一部好作品，等你收藏</strong><p>在上方添加链接，下载进度会在这里显示。</p></div>
+        <div id="tasks"></div>
+      </section>
+    </div>
+    <aside class="sidebar" aria-label="下载概览与使用说明">
+      <section class="panel summary" aria-label="本次下载概览">
+        <p class="side-label">本次收藏 · SESSION</p>
+        <div class="summary-total"><strong id="total-count">0</strong><span>部作品</span></div>
+        <div class="summary-grid"><div><strong id="completed-count">0</strong><span>已完成</span></div><div><strong id="active-count">0</strong><span>进行中 / 等待</span></div></div>
+      </section>
+      <section class="panel storage" aria-label="视频保存位置">
+        <div class="storage-head"><svg class="icon" aria-hidden="true"><use href="#i-folder"/></svg>保存到本地</div>
+        <span id="output">正在读取保存位置…</span>
+        <p class="storage-note">完成后自动保存，也可点击“另存视频”保存副本。重名文件自动编号。</p>
+      </section>
+      <section class="guide" aria-label="使用步骤">
+        <h2>收藏，只需三步</h2>
+        <ol><li><div><strong>发现喜欢的作品</strong><p>复制新片场作品链接或分享文字。</p></div></li><li><div><strong>粘贴，然后下载</strong><p>自动选择最高可用画质。</p></div></li><li><div><strong>保存你的灵感</strong><p>在本地文件夹中找到完整视频。</p></div></li></ol>
+      </section>
+    </aside>
+  </div>
+  <footer><span class="footer-brand">片刻收藏 / VIDEO COLLECTION</span><span>当前支持新片场作品 · 任务记录保留至服务关闭</span></footer>
+</main>
+<script>
+  const token = '__API_TOKEN__';
+  const $ = id => document.getElementById(id);
+  const labels = {queued: '排队中', resolving: '获取作品信息…', downloading: '正在下载', completed: '已完成', failed: '下载失败'};
+  const nodes = new Map();
+  const size = n => n >= 1073741824 ? (n / 1073741824).toFixed(2) + ' GB' : (n / 1048576).toFixed(1) + ' MB';
+  function element(tag, className, text) {
+    const node = document.createElement(tag);
+    node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+  function render(data) {
+    $('output').textContent = data.output;
+    $('total-count').textContent = data.tasks.length;
+    $('completed-count').textContent = data.tasks.filter(task => task.status === 'completed').length;
+    $('active-count').textContent = data.tasks.filter(task => ['queued', 'resolving', 'downloading'].includes(task.status)).length;
+    $('empty').hidden = data.tasks.length > 0;
+    $('count').textContent = data.tasks.length ? `(${data.tasks.length})` : '';
+    for (const task of [...data.tasks].reverse()) {
+      const signature = JSON.stringify(task);
+      if (nodes.get(task.id)?.signature === signature) continue;
+      const node = element('article', `task ${task.status}`);
+      const head = element('div', 'task-head');
+      head.append(element('span', 'title', task.title), element('span', 'status', labels[task.status]));
+      node.append(head, element('span', 'source', task.url));
+      if (task.status === 'downloading') {
+        const bar = element('progress', '');
+        bar.max = task.total || 1;
+        if (task.total) bar.value = task.received;
+        bar.setAttribute('aria-label', '下载进度');
+        node.append(bar);
+      }
+      let detail = task.quality ? `画质 ${task.quality}` : '';
+      if (task.received) detail += ` · ${size(task.received)}${task.total ? ' / ' + size(task.total) : ''}`;
+      if (task.status === 'downloading' && task.total) detail += ` · ${Math.min(100, Math.floor(task.received / task.total * 100))}%`;
+      if (detail) node.append(element('div', 'meta', detail));
+      if (task.error) node.append(element('div', 'failure', task.error));
+      if (task.status === 'completed') {
+        node.append(element('div', 'meta', `已保存：${task.filename}`));
+        const link = element('a', 'file', '另存视频 ↓');
+        link.href = '/files/' + encodeURIComponent(task.id);
+        link.download = task.filename;
+        node.append(link);
+      }
+      const previous = nodes.get(task.id);
+      if (previous) previous.node.replaceWith(node);
+      else $('tasks').prepend(node);
+      nodes.set(task.id, {node, signature});
+    }
+  }
+  async function refresh() {
+    try {
+      const response = await fetch('/api/tasks', {signal: AbortSignal.timeout(8000)});
+      if (!response.ok) throw new Error();
+      render(await response.json());
+      $('connection').textContent = '服务已连接';
+      $('connection').className = '';
+    } catch {
+      $('connection').textContent = '连接中断，请确认服务窗口仍在运行';
+      $('connection').className = 'offline';
+    }
+  }
+  $('form').addEventListener('submit', async event => {
+    event.preventDefault();
+    $('submit').disabled = true;
+    $('submit-label').textContent = '正在添加…';
+    $('error').textContent = '';
+    try {
+      const response = await fetch('/api/tasks', {
+        method: 'POST', headers: {'Content-Type': 'application/json', 'X-Download-Token': token},
+        body: JSON.stringify({url: $('url').value}), signal: AbortSignal.timeout(10000)
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || '添加失败，请重试。');
+      $('url').value = '';
+      await refresh();
+      $('url').focus();
+    } catch (error) {
+      $('error').textContent = error.name === 'TypeError' || error.name === 'TimeoutError' ? '无法连接服务，请确认服务窗口仍在运行。' : error.message;
+    } finally {
+      $('submit').disabled = false;
+      $('submit-label').textContent = '开始下载';
+    }
+  });
+  async function poll() { await refresh(); setTimeout(poll, 1000); }
+  poll();
+</script>
+</body>
+</html>

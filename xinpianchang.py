@@ -104,7 +104,7 @@ def find_ffmpeg():
     return next((str(p) for p in candidates if p.is_file()), None) or shutil.which('ffmpeg')
 
 
-def save_video(video, directory):
+def save_video(video, directory, on_progress=None):
     destination = output_path(directory, video['title'])
     partial = destination.with_suffix('.mp4.part')
     if video['stream']:
@@ -130,10 +130,16 @@ def save_video(video, directory):
                     file.write(chunk)
                     received += len(chunk)
                     if time.monotonic() - last_update >= 0.25:
-                        progress = f'{received / total:.0%}' if total else f'{received / 1048576:.1f} MB'
-                        print(f'\r正在下载：{progress}    ', end='', flush=True)
+                        if on_progress:
+                            on_progress(received, total)
+                        else:
+                            progress = f'{received / total:.0%}' if total else f'{received / 1048576:.1f} MB'
+                            print(f'\r正在下载：{progress}    ', end='', flush=True)
                         last_update = time.monotonic()
-            print()
+            if on_progress:
+                on_progress(received, total)
+            else:
+                print()
             if not received or (total and received != total):
                 raise DownloadError('下载未完成，请重试；临时文件保留为 .part，不会当作完整视频。')
     if not partial.exists() or not partial.stat().st_size:
